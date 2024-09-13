@@ -9,7 +9,7 @@ Exercises
 """
 
 from turtle import (up, goto, down, circle, update, setup, hideturtle,
-                    tracer, onscreenclick, done, pencolor, pensize, bye)
+                    tracer, onscreenclick, done, pencolor, pensize)
 
 from freegames import line
 
@@ -24,19 +24,19 @@ def grid():
 
 def drawx(x, y):
     """Draw X player."""
-    pencolor("red") # Turtle color set to red
-    padding = 20 # Padding to change the dimension of the X
+    pencolor("red")  # Turtle color set to red
+    padding = 20  # Padding to change the dimension of the X
     line(x + padding, y + padding, x + 133 - padding, y + 133 - padding)
     line(x + padding, y + 133 - padding, x + 133 - padding, y + padding)
 
 
 def drawo(x, y):
     """Draw O player."""
-    pencolor("blue") # Color turtle ser to blue
+    pencolor("blue")  # Color turtle ser to blue
     up()
     goto(x + 67, y + 25)  # Location where the turtle will start drawing
     down()
-    circle(40) # Draw a circle with radious 40
+    circle(40)  # Draw a circle with radious 40
 
 
 def floor(value):
@@ -49,7 +49,7 @@ players = [drawx, drawo]
 
 
 def tap(x, y):
-    """Draw X or O in tapped square, only if the cell is not already occupied."""
+    """Draw X or O in tapped square, if the cell is not already occupied."""
     x = floor(x)
     y = floor(y)
 
@@ -57,7 +57,8 @@ def tap(x, y):
     if (x, y) in cell_state:
         print("Cell already occupied!")  # Notify the player
         return  # Do not draw if the cell is already occupied
-    
+
+    # Draw the symbol
     player = state['player']
     draw = players[player]
     draw(x, y)
@@ -71,8 +72,8 @@ def tap(x, y):
 
 
 setup(420, 420, 370, 0)
-cell_state = {} # Track the state of all cells
-pensize(5) # Change the width of all the lines
+cell_state = {}  # Track the state of all cells
+pensize(5)  # Change the width of all the lines
 hideturtle()
 tracer(False)
 grid()
