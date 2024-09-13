@@ -9,7 +9,7 @@ Exercises
 """
 
 from turtle import (up, goto, down, circle, update, setup, hideturtle,
-                    tracer, onscreenclick, done, pencolor, pensize)
+                    tracer, onscreenclick, done, pencolor, pensize, bye)
 
 from freegames import line
 
@@ -49,17 +49,29 @@ players = [drawx, drawo]
 
 
 def tap(x, y):
-    """Draw X or O in tapped square."""
+    """Draw X or O in tapped square, only if the cell is not already occupied."""
     x = floor(x)
     y = floor(y)
+
+    # Check if the cell is already used
+    if (x, y) in cell_state:
+        print("Cell already occupied!")  # Notify the player
+        return  # Do not draw if the cell is already occupied
+    
     player = state['player']
     draw = players[player]
     draw(x, y)
     update()
+
+    # Store the player mark ("X" or "O") in the cell state
+    cell_state[(x, y)] = "X" if player == 0 else "O"
+
+    # Switch to other player
     state['player'] = not player
 
 
 setup(420, 420, 370, 0)
+cell_state = {} # Track the state of all cells
 pensize(5) # Change the width of all the lines
 hideturtle()
 tracer(False)
