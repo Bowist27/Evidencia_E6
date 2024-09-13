@@ -1,32 +1,27 @@
-"""Pacman, classic arcade game.
-
-Exercises
-
-1. Change the board.
-2. Change the number of ghosts.
-3. Change where pacman starts.
-4. Make the ghosts faster/slower.
-5. Make the ghosts smarter.
-"""
-
 from random import choice
 from turtle import *
 
 from freegames import floor, vector
 
-state = {'score': 0}
-path = Turtle(visible=False)
+# Puntuacion y configuraciones
+estado = {'score': 0}
+camino = Turtle(visible=False)
 writer = Turtle(visible=False)
-aim = vector(5, 0)
+
+# Salida del Pacman
+salida = vector(5, 0)
 pacman = vector(-40, -80)
-ghosts = [
+
+# Lista de los 4 Fantasmas
+fantasmas = [
     [vector(-180, 160), vector(5, 0)],
     [vector(-180, -160), vector(0, 5)],
     [vector(100, 160), vector(0, -5)],
     [vector(100, -160), vector(-5, 0)],
 ]
-# fmt: off
-tiles = [
+
+# Tablero del juego (0 son los pared, 1 el camino libre) 
+pared = [
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
     0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0,
@@ -48,91 +43,88 @@ tiles = [
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 ]
-# fmt: on
 
-
-def square(x, y):
-    """Draw square using path at (x, y)."""
-    path.up()
-    path.goto(x, y)
-    path.down()
-    path.begin_fill()
+# Dibuja el cuadrado usando (x,y)
+def cuadrado(x, y):
+    camino.up()
+    camino.goto(x, y)
+    camino.down()
+    camino.begin_fill()
 
     for count in range(4):
-        path.forward(20)
-        path.left(90)
+        camino.forward(20)
+        camino.left(90)
 
-    path.end_fill()
-
-
-def offset(point):
-    """Return offset of point in tiles."""
-    x = (floor(point.x, 20) + 200) / 20
-    y = (180 - floor(point.y, 20)) / 20
-    index = int(x + y * 20)
-    return index
+    camino.end_fill()
 
 
-def valid(point):
-    """Return True if point is valid in tiles."""
-    index = offset(point)
+# Conversion de coordenadas a tablero
+def conversion(punto):
+    x = (floor(punto.x, 20) + 200) / 20
+    y = (180 - floor(punto.y, 20)) / 20
+    indice = int(x + y * 20)
+    return indice
 
-    if tiles[index] == 0:
+
+#Verifica si es valido el punto de moverse
+def valido(punto):
+    indice = conversion(punto)
+
+    if pared[indice] == 0:
         return False
 
-    index = offset(point + 19)
+    indice = conversion(punto + 19)
 
-    if tiles[index] == 0:
+    if pared[indice] == 0:
         return False
 
-    return point.x % 20 == 0 or point.y % 20 == 0
+    return punto.x % 20 == 0 or punto.y % 20 == 0
 
 
-def world():
-    """Draw world using path."""
+#Dibuja el mundo con las paredes cargadas
+def mundo():
     bgcolor('black')
-    path.color('blue')
+    camino.color('blue')
 
-    for index in range(len(tiles)):
-        tile = tiles[index]
+    for indice in range(len(pared)):
+        muro = pared[indice]
 
-        if tile > 0:
-            x = (index % 20) * 20 - 200
-            y = 180 - (index // 20) * 20
-            square(x, y)
+        if muro > 0:
+            x = (indice % 20) * 20 - 200
+            y = 180 - (indice // 20) * 20
+            cuadrado(x, y)
 
-            if tile == 1:
-                path.up()
-                path.goto(x + 10, y + 10)
-                path.dot(2, 'white')
+            if muro == 1:
+                camino.up()
+                camino.goto(x + 10, y + 10)
+                camino.dot(2, 'white')
 
-
+# Mueve los Pacman y Fantasmas
 def move():
-    """Move pacman and all ghosts."""
     writer.undo()
-    writer.write(state['score'])
+    writer.write(estado['score'])
 
     clear()
 
-    if valid(pacman + aim):
-        pacman.move(aim)
+    if valido(pacman + salida):
+        pacman.move(salida)
 
-    index = offset(pacman)
+    indice = conversion(pacman)
 
-    if tiles[index] == 1:
-        tiles[index] = 2
-        state['score'] += 1
-        x = (index % 20) * 20 - 200
-        y = 180 - (index // 20) * 20
-        square(x, y)
+    if pared[indice] == 1:
+        pared[indice] = 2
+        estado['score'] += 1
+        x = (indice % 20) * 20 - 200
+        y = 180 - (indice // 20) * 20
+        cuadrado(x, y)
 
     up()
     goto(pacman.x + 10, pacman.y + 10)
     dot(20, 'yellow')
 
-    for point, course in ghosts:
-        if valid(point + course):
-            point.move(course)
+    for punto, course in fantasmas:
+        if valido(punto + course):
+            punto.move(course)
         else:
             options = [
                 vector(5, 0),
@@ -145,36 +137,38 @@ def move():
             course.y = plan.y
 
         up()
-        goto(point.x + 10, point.y + 10)
+        goto(punto.x + 10, punto.y + 10)
         dot(20, 'red')
 
     update()
 
-    for point, course in ghosts:
-        if abs(pacman - point) < 20:
+    for punto, course in fantasmas:
+        if abs(pacman - punto) < 20:
             return
 
+    # Cambia la velocidad de fantasmas y Pacman
     ontimer(move, 10)
 
 
-def change(x, y):
-    """Change pacman aim if valid."""
-    if valid(pacman + vector(x, y)):
-        aim.x = x
-        aim.y = y
+# Cambia personajes en (x,y)
+def cambio(x, y):
+    if valido(pacman + vector(x, y)):
+        salida.x = x
+        salida.y = y
 
-
+# Tamaño de pantalla
 setup(420, 420, 370, 0)
 hideturtle()
 tracer(False)
 writer.goto(160, 160)
 writer.color('white')
-writer.write(state['score'])
+writer.write(estado['score'])
 listen()
-onkey(lambda: change(5, 0), 'Right')
-onkey(lambda: change(-5, 0), 'Left')
-onkey(lambda: change(0, 5), 'Up')
-onkey(lambda: change(0, -5), 'Down')
-world()
+#Control de pacman
+onkey(lambda: cambio(5, 0), 'Right')
+onkey(lambda: cambio(-5, 0), 'Left')
+onkey(lambda: cambio(0, 5), 'Up')
+onkey(lambda: cambio(0, -5), 'Down')
+mundo()
 move()
 done()
