@@ -1,18 +1,19 @@
 from random import choice
-from turtle import *
+from turtle import Turtle, bgcolor, clear, goto, dot, up, setup
+from turtle import hideturtle, update, ontimer, tracer, listen, onkey, done
 
 from freegames import floor, vector
 
-# Puntuacion y configuraciones
+"""Puntuacion y configuraciones"""
 estado = {'score': 0}
 camino = Turtle(visible=False)
 writer = Turtle(visible=False)
 
-# Salida del Pacman
+"""Salida del Pacman"""
 salida = vector(5, 0)
 pacman = vector(-40, -80)
 
-# Lista de los 4 Fantasmas
+"""Lista de los 4 Fantasmas"""
 fantasmas = [
     [vector(-180, 160), vector(5, 0)],
     [vector(-180, -160), vector(0, 5)],
@@ -20,7 +21,8 @@ fantasmas = [
     [vector(100, -160), vector(-5, 0)],
 ]
 
-# Tablero del juego (0 son los pared, 1 el camino libre) 
+"""Tablero del juego (0 son los pared, 1 el camino libre)"""
+
 pared = [
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
@@ -44,7 +46,10 @@ pared = [
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 ]
 
-# Dibuja el cuadrado usando (x,y)
+
+"""Dibuja el cuadrado usando (x,y)"""
+
+
 def cuadrado(x, y):
     camino.up()
     camino.goto(x, y)
@@ -58,7 +63,9 @@ def cuadrado(x, y):
     camino.end_fill()
 
 
-# Conversion de coordenadas a tablero
+"""Conversion de coordenadas a tablero"""
+
+
 def conversion(punto):
     x = (floor(punto.x, 20) + 200) / 20
     y = (180 - floor(punto.y, 20)) / 20
@@ -66,7 +73,9 @@ def conversion(punto):
     return indice
 
 
-#Verifica si es valido el punto de moverse
+"""Verifica si es valido el punto de moverse"""
+
+
 def valido(punto):
     indice = conversion(punto)
 
@@ -81,7 +90,9 @@ def valido(punto):
     return punto.x % 20 == 0 or punto.y % 20 == 0
 
 
-#Dibuja el mundo con las paredes cargadas
+"""Dibuja el mundo con las paredes cargadas"""
+
+
 def mundo():
     bgcolor('black')
     camino.color('blue')
@@ -99,7 +110,10 @@ def mundo():
                 camino.goto(x + 10, y + 10)
                 camino.dot(2, 'white')
 
-# Mueve los Pacman y Fantasmas
+
+""" Mueve los Pacman y Fantasmas"""
+
+
 def move():
     writer.undo()
     writer.write(estado['score'])
@@ -146,17 +160,23 @@ def move():
         if abs(pacman - punto) < 20:
             return
 
-    # Cambia la velocidad de fantasmas y Pacman
+    """Cambia la velocidad de fantasmas y Pacman"""
+
     ontimer(move, 10)
 
 
-# Cambia personajes en (x,y)
+"""Cambia personajes en (x,y)"""
+
+
 def cambio(x, y):
     if valido(pacman + vector(x, y)):
         salida.x = x
         salida.y = y
 
-# Tamaño de pantalla
+
+"""Tamaño de pantalla"""
+
+
 setup(420, 420, 370, 0)
 hideturtle()
 tracer(False)
@@ -164,7 +184,8 @@ writer.goto(160, 160)
 writer.color('white')
 writer.write(estado['score'])
 listen()
-#Control de pacman
+"""Control de pacman"""
+
 onkey(lambda: cambio(5, 0), 'Right')
 onkey(lambda: cambio(-5, 0), 'Left')
 onkey(lambda: cambio(0, 5), 'Up')
