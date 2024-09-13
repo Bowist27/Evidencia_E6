@@ -9,7 +9,7 @@ Exercises
 """
 
 from turtle import (up, goto, down, circle, update, setup, hideturtle,
-                    tracer, onscreenclick, done)
+                    tracer, onscreenclick, done, pencolor, pensize)
 
 from freegames import line
 
@@ -24,16 +24,19 @@ def grid():
 
 def drawx(x, y):
     """Draw X player."""
-    line(x, y, x + 133, y + 133)
-    line(x, y + 133, x + 133, y)
+    pencolor("red") # Turtle color set to red
+    padding = 20 # Padding to change the dimension of the X
+    line(x + padding, y + padding, x + 133 - padding, y + 133 - padding)
+    line(x + padding, y + 133 - padding, x + 133 - padding, y + padding)
 
 
 def drawo(x, y):
     """Draw O player."""
+    pencolor("blue") # Color turtle ser to blue
     up()
-    goto(x + 67, y + 5)
+    goto(x + 67, y + 25)  # Location where the turtle will start drawing
     down()
-    circle(62)
+    circle(40) # Draw a circle with radious 40
 
 
 def floor(value):
@@ -57,6 +60,7 @@ def tap(x, y):
 
 
 setup(420, 420, 370, 0)
+pensize(5) # Change the width of all the lines
 hideturtle()
 tracer(False)
 grid()
